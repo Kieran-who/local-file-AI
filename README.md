@@ -3,6 +3,9 @@
 This will process files within the designated directory, adding file segments,
 files and folders into a vector database for search retrieval and generation
 
+This uses Weaviate's embedded client so no need to spin up a seperate DB. This
+is still marked by Weaviate as experimental
+
 # Get Started
 
 1. Update the config file
