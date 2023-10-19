@@ -1,3 +1,9 @@
+config.py
+/__pycache__
+to_index/
+temp/
+.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
