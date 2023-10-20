@@ -66,7 +66,7 @@ async def client_start():
                 "BACKUP_AZURE_CONTAINER": AZURE_CONTAINER_NAME,
                 "AZURE_STORAGE_CONNECTION_STRING": AZURE_STORAGE_CONNECTION_STRING,
                 "AZURE_APIKEY": AZURE_OPENAI_KEY,
-                "LOG_FORMAT": "text"
+                "LOG_FORMAT": "text",
             }
 
         )

@@ -107,7 +107,6 @@ async def process_folder(folder_path, document_ids, folder_ids, pbar):
             text_summary = {"message": {
                 "content": "There was an error retrieving a summary for this folder"}}
         # create folder in db
-        print(text_summary)
         folder_id = await new_folder({"summary": text_summary["message"]["content"], "file_path": folder_path, "name": folder_path.split('/')[-1], "hash": folder_hash}, document_ids, folder_ids)
 
         # create folder summary
