@@ -62,7 +62,7 @@ async def client_start():
         embedded_options=EmbeddedOptions(
             persistence_data_path="./db/data",
             additional_env_vars={
-                "ENABLE_MODULES": "backup-azure",
+                "ENABLE_MODULES": "backup-azure, generative-openai",
                 "BACKUP_AZURE_CONTAINER": AZURE_CONTAINER_NAME,
                 "AZURE_STORAGE_CONNECTION_STRING": AZURE_STORAGE_CONNECTION_STRING,
                 "AZURE_APIKEY": AZURE_OPENAI_KEY,

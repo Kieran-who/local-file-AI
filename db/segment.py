@@ -13,10 +13,12 @@ document: parent document,
 
 def display_res(data):
     def flatten(item):
+        document_name = item["document"][0]["name"] if item.get(
+            "document") and len(item["document"]) > 0 else ''
 
         return {
             "Distance": item.get("_additional", {}).get("distance"),
-            "Document": item["document"][0]["name"],
+            "Document":  document_name,
             "Text": item["text"].replace("\n", "<br/>"),
         }
 
@@ -27,12 +29,6 @@ def display_res(data):
         return rows
 
     df = pd.DataFrame(explore_json(data))
-    # df = df.style.set_table_styles([
-    #     {
-    #         'selector': 'table',
-    #         'props': 'width: 100%'
-    #     }
-    # ])
     return HTML(df.to_html(escape=False, index=False))
 
 
@@ -47,8 +43,22 @@ async def search_segs(query):
         .with_additional(["id", "creationTimeUnix", "distance"])
         .do()
     )
-    print(result)
     return {"raw": result["data"]["Get"]["Segment"], "notebook": display_res(result["data"]["Get"]["Segment"])}
+
+
+async def search_segs_with_res(query):
+    client = await DBClient()
+    vector = await get_vector(query)
+    result = (
+        client.query
+        .get("Segment", ["text", "document { ... on Document { name } }"])
+        .with_near_vector({
+            "vector": vector})
+        .with_additional(["id", "creationTimeUnix", "distance"])
+        .with_generate(grouped_task=query)
+        .do()
+    )
+    return {"raw": result["data"]["Get"]["Segment"], "notebook": display_res(result["data"]["Get"]["Segment"]), "response": result["data"]["Get"]["Segment"][0]["_additional"]["generate"]["groupedResult"]}
 
 # Search segs by doc id
 
