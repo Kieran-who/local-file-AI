@@ -3,6 +3,8 @@ config.py
 to_index/
 temp/
 .DS_Store
+Literature and resources/
+local_AI/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
