@@ -7,6 +7,13 @@ from db.docs import new_doc, update_doc_segs, search_docs_path, search_docs_hash
 from utils.azure_open_ai import get_chat_completion
 import tiktoken
 import hashlib
+import logging
+
+# Get the logger for the module
+logger = logging.getLogger('pdfminer.pdfpage')
+
+# Set the level to ERROR
+logger.setLevel(logging.ERROR)
 
 
 def extract_text(file_path):
@@ -65,7 +72,7 @@ def extract_text(file_path):
         raise ValueError('Unsupported file type')
 
 
-async def process_doc(doc):
+async def process_doc(doc, pbar):
     # plain function to extract text from doc
     doc_text = extract_text(doc["path"])
 
@@ -75,7 +82,7 @@ async def process_doc(doc):
     existing_doc = await search_docs_hash(doc_hash)
 
     if existing_doc:
-
+        pbar.update()
         return ({"id": existing_doc[0]["_additional"]["id"]})
     else:
         # test if old doc exists
@@ -126,5 +133,5 @@ async def process_doc(doc):
 
             # add segments to document
             await update_doc_segs(segment_ids, doc_id)
-
+        pbar.update()
         return ({"id": doc_id})
