@@ -49,11 +49,9 @@ async def process_directory(path, pbar):  # Add pbar as a parameter
 
         if filenames:
             # gather creates a future aggregating results from several coroutines
-            doc_infos = await asyncio.gather(*[process_doc(f) for f in filenames])
+            doc_infos = await asyncio.gather(*[process_doc(f, pbar) for f in filenames])
 
             doc_ids = [doc_info['id'] for doc_info in doc_infos]
-            for _ in filenames:
-                pbar.update()
 
         else:
             doc_ids, doc_summaries = [], []
@@ -64,7 +62,7 @@ async def process_directory(path, pbar):  # Add pbar as a parameter
             for dirname in dirnames:
                 # Creating task for asyncio to handle task scheduling
                 future = asyncio.create_task(
-                    process_directory(os.path.join(dirpath, dirname), pbar))  # Remember to pass it here too!
+                    process_directory(os.path.join(dirpath, dirname), pbar))
                 futures.append(future)
 
         # Wait for all futures and collect folder_ids and folder_summaries
