@@ -102,13 +102,13 @@ async def process_doc(doc, pbar):
 
         first_5000_tokens = doc_text
 
-        sum_prompt = f"Summarise the below {doc_type} document. It is vital to ensure the summary is as semantically identical to the text but keep it fairly brief. Start your summary with 'This document'"
+        sum_prompt = f"Summarise the below {doc_type} document. It is vital to ensure the summary is as semantically identical to the text but keep it fairly brief. Do not include the document name in your summary. Start your summary with 'This document'"
 
         # reduce string size for summary generation
         if num_tokens > 5000:
             first_5000_tokens = encoding.encode(doc_text)[:5000]
             first_5000_tokens = encoding.decode(first_5000_tokens)
-            sum_prompt = f"Summarise the below {doc_type} document but keep it fairly brief. Due to the document's size, you have been provided only the start of the document. Use this start of the document to write a summary applicable to the whole document. Start your summary with 'This document'"
+            sum_prompt = f"Summarise the below {doc_type} document but keep it fairly brief. Due to the document's size, you have been provided only the start of the document. Use this start of the document to write a summary applicable to the whole document. Do not include the document name in your summary. Start your summary with 'This document'"
 
         # get summary of document
         try:
@@ -116,13 +116,21 @@ async def process_doc(doc, pbar):
         except Exception as e:
             text_summary = {"message": {
                 "content": "There was an error retrieving a summary for this document"}}
-        # new doc object
-        new_doc_obj = {
-            "name": doc["name"],
-            "file_path": doc["path"],
-            "summary": text_summary["message"]["content"],
-            "hash": doc_hash
-        }
+        new_doc_obj = {}
+        if 'message' in text_summary and 'content' in text_summary['message']:
+            # new doc object
+            new_doc_obj = {
+                "name": doc["name"],
+                "file_path": doc["path"],
+                "summary": text_summary["message"]["content"],
+                "hash": doc_hash
+            }
+        else:
+            new_doc_obj = {
+                "name": doc["name"],
+                "file_path": doc["path"],
+                "hash": doc_hash
+            }
 
         # create document
         doc_id = await new_doc(new_doc_obj)

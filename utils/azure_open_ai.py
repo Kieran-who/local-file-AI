@@ -57,7 +57,10 @@ async def get_chat_completion(messages, model=DEFAULT_SUMMARISATION_MODEL, max_r
                 raise Exception("AZURE_OPENAI_KEY is not set.")
             else:
                 response = openai.ChatCompletion.create(**call_args)
-                return response['choices'][0]
+                if 'choices' in response and len(response['choices']) > 0:
+                    return response['choices'][0]
+                else:
+                    raise Exception("Error in OpenAI Call")
         except Exception as e:
             print(e)
             print(messages)

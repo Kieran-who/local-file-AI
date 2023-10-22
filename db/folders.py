@@ -81,7 +81,11 @@ async def folder_getter(id):
 
 async def new_folder(data_obj, document_ids, folder_ids):
     client = await DBClient()
-    custom_vector = await get_vector(data_obj["summary"])
+    custom_vector = []
+    if data_obj["summary"]:
+        custom_vector = await get_vector(data_obj["summary"])
+    else:  # if no summary, use name
+        custom_vector = await get_vector(data_obj["name"])
     new_folder = client.data_object.create(
         data_obj,
         "Folder",

@@ -120,7 +120,11 @@ async def delete_doc(id):
 
 async def new_doc(data_obj):
     client = await DBClient()
-    custom_vector = await get_vector(data_obj["summary"])
+    custom_vector = []
+    if data_obj["summary"]:
+        custom_vector = await get_vector(data_obj["summary"])
+    else:  # if no summary, use name
+        custom_vector = await get_vector(data_obj["name"])
     new_doc = client.data_object.create(
         data_obj,
         "Document",
