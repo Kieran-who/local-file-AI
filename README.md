@@ -15,3 +15,6 @@ is still marked by Weaviate as experimental
 # To do
 
 1. Question and answering / generative responses based on information
+2. Have a unique database instance for different directories to maintain
+   seperation of directories -> achieved through ability to restore specific
+   backups that are named after indexing of specific folders

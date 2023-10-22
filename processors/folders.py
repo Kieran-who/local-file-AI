@@ -58,12 +58,16 @@ async def process_folder(folder_path, document_ids, folder_ids, pbar):
     document_summaries = []
     for doc_id in document_ids:
         doc_object = await doc_getter(doc_id)
-        document_summaries.append(doc_object["properties"]["summary"])
+        if doc_object["properties"]["summary"]:
+            document_summaries.append(doc_object["properties"]["summary"])
     folder_summaries = []
     for folder_id in folder_ids:
         folder_object = await folder_getter(folder_id)
-        folder_summaries.append(folder_object["properties"]["summary"])
-    # plain function to extract text from doc
+        if folder_object["properties"]["summary"]:
+            folder_summaries.append(folder_object["properties"]["summary"])
+    # for hash -> sort to ensure same order if no changes
+    folder_summaries.sort()
+    document_summaries.sort()
     sum_text = '###\n'.join(folder_summaries) + \
         '###\n'.join(document_summaries)
 
@@ -101,15 +105,26 @@ async def process_folder(folder_path, document_ids, folder_ids, pbar):
         # get summary of folder
         text_summary = ""
         try:
-            summ_message = [{"role": "user", "content": f"Below are summaries for documents and/or folders contained within a folder. Each document should be seperated with ###. Your job is to provide an overall summary of the content that is housed in this folder. Be detailed about the overall makeup of content in the folder but keep it fairly brief. *DO NOT* make specific reference to each sub document or folder. Start your summary with 'This folder' \n###\n {first_5000_tokens}"}]
+            summ_message = [{"role": "user", "content": f"Below are summaries for documents and/or folders contained within a folder. Each document should be seperated with ###. Your job is to provide an overall summary of the content that is housed in this folder. Be detailed about the overall makeup of content in the folder but keep it fairly brief. *DO NOT* make specific reference to each sub document or folder. Start your summary with 'This folder'. If there are no provided summaries the folder must be empty and you can just note this fact. \n###\n {first_5000_tokens}"}]
             text_summary = await get_chat_completion(summ_message, max_res_tokens=250)
         except Exception as e:
             text_summary = {"message": {
                 "content": "There was an error retrieving a summary for this folder"}}
+        new_folder_obj = {}
+        if 'message' in text_summary and 'content' in text_summary['message']:
+            # new doc object
+            new_folder_obj = {"summary": text_summary["message"]["content"], "file_path": folder_path, "name": folder_path.split(
+                '/')[-1], "hash": folder_hash}
+        else:
+            new_folder_obj = {
+                {"file_path": folder_path, "name": folder_path.split(
+                    '/')[-1], "hash": folder_hash}
+            }
         # create folder in db
-        folder_id = await new_folder({"summary": text_summary["message"]["content"], "file_path": folder_path, "name": folder_path.split('/')[-1], "hash": folder_hash}, document_ids, folder_ids)
+        folder_id = await new_folder(new_folder_obj, document_ids, folder_ids)
 
         # create folder summary
-        await create_folder_table(folder_path, document_ids, folder_ids)
+        if (len(document_ids) + len(folder_ids)) > 0:
+            await create_folder_table(folder_path, document_ids, folder_ids)
         pbar.update()
         return ({"folder_id": folder_id})
