@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO,
                     handlers=[logging.StreamHandler()])
 
 # Array of accepted filetypes.
-accepted_filetypes = [".docx", ".pdf", ".pptx", ".xlsx", ".txt"]
+accepted_filetypes = [".docx", ".pdf", ".pptx", ".xlsx", ".txt", ".rtf"]
 avoid_filenames = ["Folder_Contents.xlsx"]
 avoid_directories = FOLDERS_TO_IGNORE
 

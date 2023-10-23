@@ -8,6 +8,7 @@ from utils.azure_open_ai import get_chat_completion
 import tiktoken
 import hashlib
 import logging
+from striprtf.striprtf import rtf_to_text
 
 # Get the logger for the module
 logger = logging.getLogger('pdfminer.pdfpage')
@@ -67,6 +68,11 @@ def extract_text(file_path):
     elif file_path.endswith('.txt'):
         with open(file_path, 'r') as f:
             text = f.read()
+        return text
+    elif file_path.endswith('.rtf'):
+        with open(file_path, 'r') as infile:
+            content = infile.read()
+            text = rtf_to_text(content)
         return text
     else:
         raise ValueError('Unsupported file type')
