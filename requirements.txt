@@ -149,7 +149,7 @@ pydantic==2.4.2
 pydantic_core==2.10.1
 Pygments==2.16.1
 PyJWT==2.8.0
-pypdf==3.16.4
+pypdf==3.17.0
 PyPDF2==3.0.1
 python-dateutil==2.8.2
 python-docx==1.0.1
