@@ -133,7 +133,7 @@ parso==0.8.3
 pdfminer.six==20221105
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==10.0.1
+Pillow==10.2.0
 platformdirs==3.11.0
 portalocker==2.8.2
 preshed==3.0.9
